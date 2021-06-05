@@ -1,10 +1,14 @@
 import React from 'react';
-import { FlatList, TouchableOpacity, View, Text, StyleSheet, FlatListProps } from 'react-native';
+import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 
-function FlatListHeaderComponent() {
+interface FlatListProps{
+  isEnable: boolean
+}
+
+function FlatListHeaderComponent({isEnable} : FlatListProps) {
   return (
     <View>
-      <Text style={styles.header}>Minhas tasks</Text>
+      <Text style={ isEnable ? styles.headerDark : styles.header}>Minhas tasks</Text>
     </View>
   )
 }
@@ -17,9 +21,10 @@ interface MyTasksListProps {
   }[];
   onPress: (id: number) => void;
   onLongPress: (id: number) => void;
+  isEnable: boolean
 }
 
-export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
+export function MyTasksList({ tasks, onLongPress, onPress, isEnable }: MyTasksListProps) {
   return (
     <FlatList
       data={tasks}
@@ -31,27 +36,29 @@ export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
             activeOpacity={0.7}
             onPress={() => onPress(item.id)}
             onLongPress={() => onLongPress(item.id)}
-            style={item.done ? styles.taskButtonDone: styles.taskButton}
+            style={item.done ? ( isEnable ? styles.taskButtonDoneDark : styles.taskButtonDone) : styles.taskButton }
           >
             <View 
               testID={`marker-${index}`}
-              style={item.done ? styles.taskMarkerDone: styles.taskMarker} 
+              style={item.done ? ( isEnable ? styles.taskMarkerDoneDark : styles.taskMarkerDone): ( isEnable ? styles.taskMarkerDark : styles.taskMarker)} 
             />
             <Text 
-              style={item.done ? styles.taskTextDone: styles.taskText} 
+              style={item.done ? ( isEnable ? styles.taskTextDoneDark : styles.taskTextDone): ( isEnable ? styles.taskTextDark : styles.taskText)} 
             >
               {item.title}
             </Text>
           </TouchableOpacity>
         )
       }}
-      ListHeaderComponent={<FlatListHeaderComponent />}
+      ListHeaderComponent={<FlatListHeaderComponent isEnable={isEnable}/>}
       ListHeaderComponentStyle={{
-        marginBottom: 20
+        marginBottom: 20,
+        backgroundColor:  ( isEnable ? '#10101E' : '#FFFFFF' )
       }}
       style={{
-        marginHorizontal: 24,
-        marginTop: 32
+        paddingHorizontal: 24,
+        paddingTop: 32,
+        backgroundColor: ( isEnable ? '#10101E' : '#FFFFFF' )
       }}
     />
   )
@@ -60,6 +67,11 @@ export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
 const styles = StyleSheet.create({
   header: {
     color: '#3D3D4D',
+    fontSize: 24,
+    fontFamily: 'Poppins-SemiBold'
+  },
+  headerDark: {
+    color: '#565BFF',
     fontSize: 24,
     fontFamily: 'Poppins-SemiBold'
   },
@@ -80,8 +92,19 @@ const styles = StyleSheet.create({
     borderColor: '#3D3D4D',
     marginRight: 10
   },
+  taskMarkerDark: {
+    height: 16,
+    width: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E1E1E6',
+    marginRight: 10
+  },
   taskText: {
     color: '#3D3D4D',
+  },
+  taskTextDark: {
+    color: '#E1E1E6',
   },
   taskButtonDone: {
     flex: 1,
@@ -93,6 +116,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center'
   },
+  taskButtonDoneDark: {
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 12,
+    marginBottom: 4,
+    borderRadius: 4,
+    backgroundColor: '#212136',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
   taskMarkerDone: {
     height: 16,
     width: 16,
@@ -100,8 +133,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#273FAD',
     marginRight: 10
   },
+  taskMarkerDoneDark: {
+    height: 16,
+    width: 16,
+    borderRadius: 8,
+    backgroundColor: '#565BFF',
+    marginRight: 10
+  },
   taskTextDone: {
     color: '#A09CB1',
+    textDecorationLine: 'line-through'
+  },
+  taskTextDoneDark: {
+    color: '#E1E1E6',
     textDecorationLine: 'line-through'
   }
 })
